@@ -1,0 +1,149 @@
+
+# Padrão Criacional: Abstract Factory
+# Tema: Sistema de Gerenciamento de Dispositivos IoT
+
+
+# Definindo as interfaces dos produtos
+class SensorTemperatura:
+    def obter_temperatura(self):
+        pass
+
+class SensorUmidade:
+    def obter_umidade(self):
+        pass
+
+# Implementação de sensores concretos
+class SensorTemperaturaConcreto(SensorTemperatura):
+    def obter_temperatura(self):
+        return 22.5  # Exemplo de valor fixo
+
+class SensorUmidadeConcreto(SensorUmidade):
+    def obter_umidade(self):
+        return 60  # Exemplo de valor fixo
+
+# Interface da fábrica abstrata
+class FabricaDeSensores:
+    def criar_sensor_temperatura(self):
+        pass
+
+    def criar_sensor_umidade(self):
+        pass
+
+# Fábrica concreta para dispositivos de casa
+class FabricaCasa(FabricaDeSensores):
+    def criar_sensor_temperatura(self):
+        return SensorTemperaturaConcreto()
+
+    def criar_sensor_umidade(self):
+        return SensorUmidadeConcreto()
+
+# Código cliente
+def mostrar_dados_sensores(fabrica: FabricaDeSensores):
+    sensor_temperatura = fabrica.criar_sensor_temperatura()
+    sensor_umidade = fabrica.criar_sensor_umidade()
+    
+    print(f"Temperatura: {sensor_temperatura.obter_temperatura()}°C")
+    print(f"Umidade: {sensor_umidade.obter_umidade()}%")
+
+# Usando a fábrica
+fabrica = FabricaCasa()
+mostrar_dados_sensores(fabrica)
+
+
+# ===================================
+# Padrão Estrutural: Composite
+# Tema: Sistema de Arquivos
+# ===================================
+
+# Classe base para componentes
+class ComponenteDeSistemaDeArquivos:
+    def exibir(self):
+        pass
+
+# Classe folha: Arquivo
+class Arquivo(ComponenteDeSistemaDeArquivos):
+    def __init__(self, nome):
+        self.nome = nome
+
+    def exibir(self):
+        print(f"Arquivo: {self.nome}")
+
+# Classe composta: Diretório
+class Diretorio(ComponenteDeSistemaDeArquivos):
+    def __init__(self, nome):
+        self.nome = nome
+        self.componentes = []
+
+    def adicionar_componente(self, componente: ComponenteDeSistemaDeArquivos):
+        self.componentes.append(componente)
+
+    def exibir(self):
+        print(f"Diretório: {self.nome}")
+        for componente in self.componentes:
+            componente.exibir()
+
+# Código cliente
+def mostrar_estrutura(raiz: ComponenteDeSistemaDeArquivos):
+    raiz.exibir()
+
+# Usando o padrão Composite
+diretorio_raiz = Diretorio("Raiz")
+arquivo1 = Arquivo("documento.txt")
+arquivo2 = Arquivo("imagem.png")
+diretorio_sub = Diretorio("subdiretorio")
+arquivo3 = Arquivo("musica.mp3")
+
+diretorio_sub.adicionar_componente(arquivo3)
+diretorio_raiz.adicionar_componente(arquivo1)
+diretorio_raiz.adicionar_componente(arquivo2)
+diretorio_raiz.adicionar_componente(diretorio_sub)
+
+mostrar_estrutura(diretorio_raiz)
+
+
+# ===================================
+# Padrão Comportamental: Observer
+# Tema: Sistema de Notificação de Alterações em Banco de Dados
+# ===================================
+
+# Classe do sujeito (observado)
+class BancoDeDados:
+    def __init__(self):
+        self.observadores = []
+        self.dados = None
+
+    def adicionar_observador(self, observador):
+        self.observadores.append(observador)
+
+    def remover_observador(self, observador):
+        self.observadores.remove(observador)
+
+    def notificar_observadores(self):
+        for observador in self.observadores:
+            observador.atualizar(self)
+
+    def alterar_dados(self, novos_dados):
+        self.dados = novos_dados
+        self.notificar_observadores()
+
+# Classe do observador
+class Usuario:
+    def __init__(self, nome):
+        self.nome = nome
+
+    def atualizar(self, banco_de_dados):
+        print(f"Usuário {self.nome} foi notificado: Novos dados no banco de dados - {banco_de_dados.dados}")
+
+# Código cliente
+def simular_alteracao(banco_de_dados):
+    banco_de_dados.alterar_dados("Novos dados de vendas")
+
+# Usando o padrão Observer
+banco = BancoDeDados()
+usuario1 = Usuario("Alice")
+usuario2 = Usuario("Bob")
+
+banco.adicionar_observador(usuario1)
+banco.adicionar_observador(usuario2)
+
+simular_alteracao(banco)
